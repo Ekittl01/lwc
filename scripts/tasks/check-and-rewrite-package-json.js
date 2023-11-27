@@ -81,6 +81,7 @@ for (const dir of directories) {
         scripts: {
             build: 'rollup --config ../../../scripts/rollup/rollup.config.js',
             dev: 'rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen',
+            test: 'jest --testTimeout 60000 ./src/**/*.spec.ts',
         },
         nx: {
             targets: {

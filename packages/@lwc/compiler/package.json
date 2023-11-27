@@ -30,7 +30,8 @@
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
-        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen",
+        "test": "jest --testTimeout 60000 ./src/**/*.spec.ts"
     },
     "nx": {
         "targets": {
@@ -51,6 +52,7 @@
         "@lwc/babel-plugin-component": "5.1.0",
         "@lwc/errors": "5.1.0",
         "@lwc/shared": "5.1.0",
+        "@lwc/ssr-compiler": "5.1.0",
         "@lwc/style-compiler": "5.1.0",
         "@lwc/template-compiler": "5.1.0"
     }
