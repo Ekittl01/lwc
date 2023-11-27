@@ -1,6 +1,7 @@
 import { builders as b, is } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { irToEs } from './ir-to-es';
+import { optimizeAdjacentYieldStmts } from './shared';
 
 import type { ForEach as IrForEach } from '@lwc/template-compiler';
 import type {
@@ -56,7 +57,7 @@ export const ForEach: Transformer<IrForEach> = function ForEach(node, cxt): EsFo
             b.identifier(forIndexId),
             b.identifier(forItemId),
             iterable,
-            forEachStatements
+            optimizeAdjacentYieldStmts(forEachStatements)
         ),
     ];
 };

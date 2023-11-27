@@ -1,5 +1,7 @@
+import { is } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
-import type { ImportDeclaration as EsImportDeclaration } from 'estree';
+
+import type { ImportDeclaration as EsImportDeclaration, Statement as EsStatement } from 'estree';
 
 export const bImportHtmlEscape = esTemplate<EsImportDeclaration>`
     import { htmlEscape } from '@lwc/shared';
@@ -69,3 +71,33 @@ const imperfectIdentifierMatcher = /^[_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFF
 
 export const isValidIdentifier = (str: string) =>
     !reservedKeywords.has(str) && imperfectIdentifierMatcher.test(str);
+
+export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
+    let prevStmt: EsStatement | null = null;
+    return statements
+        .map((stmt) => {
+            if (
+                // Check if the current statement and previous statement are
+                // both yield expression statements that yield a string literal.
+                prevStmt &&
+                is.expressionStatement(prevStmt) &&
+                is.yieldExpression(prevStmt.expression) &&
+                !prevStmt.expression.delegate &&
+                prevStmt.expression.argument &&
+                is.literal(prevStmt.expression.argument) &&
+                typeof prevStmt.expression.argument.value === 'string' &&
+                is.expressionStatement(stmt) &&
+                is.yieldExpression(stmt.expression) &&
+                !stmt.expression.delegate &&
+                stmt.expression.argument &&
+                is.literal(stmt.expression.argument) &&
+                typeof stmt.expression.argument.value === 'string'
+            ) {
+                prevStmt.expression.argument.value += stmt.expression.argument.value;
+                return null;
+            }
+            prevStmt = stmt;
+            return stmt;
+        })
+        .filter((el): el is NonNullable<EsStatement> => el !== null);
+}

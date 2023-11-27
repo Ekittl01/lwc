@@ -3,6 +3,8 @@ import { is, builders as b } from 'estree-toolkit';
 import { parse } from '@lwc/template-compiler';
 import { esTemplate } from '../estemplate';
 import { templateIrToEsTree } from './ir-to-es';
+import { optimizeAdjacentYieldStmts } from './shared';
+
 import type {
     Node as EsNode,
     Statement as EsStatement,
@@ -38,36 +40,6 @@ const bExportTemplate = esTemplate<
         }
     }
 `;
-
-function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
-    let prevStmt: EsStatement | null = null;
-    return statements
-        .map((stmt) => {
-            if (
-                // Check if the current statement and previous statement are
-                // both yield expression statements that yield a string literal.
-                prevStmt &&
-                prevStmt.type === 'ExpressionStatement' &&
-                prevStmt.expression.type === 'YieldExpression' &&
-                !prevStmt.expression.delegate &&
-                prevStmt.expression.argument &&
-                prevStmt.expression.argument.type === 'Literal' &&
-                typeof prevStmt.expression.argument.value === 'string' &&
-                stmt.type === 'ExpressionStatement' &&
-                stmt.expression.type === 'YieldExpression' &&
-                !stmt.expression.delegate &&
-                stmt.expression.argument &&
-                stmt.expression.argument.type === 'Literal' &&
-                typeof stmt.expression.argument.value === 'string'
-            ) {
-                prevStmt.expression.argument.value += stmt.expression.argument.value;
-                return null;
-            }
-            prevStmt = stmt;
-            return stmt;
-        })
-        .filter((el): el is NonNullable<EsStatement> => el !== null);
-}
 
 export default function compileTemplate(src: string, _filename: string) {
     const { root, warnings } = parse(src);

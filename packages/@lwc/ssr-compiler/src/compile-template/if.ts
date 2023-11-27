@@ -1,6 +1,7 @@
 import { builders as b } from 'estree-toolkit';
 import { irToEs } from './ir-to-es';
 import { expressionIrToEs } from './expression';
+import { optimizeAdjacentYieldStmts } from './shared';
 
 import type {
     ChildNode as IrChildNode,
@@ -12,7 +13,9 @@ import type { BlockStatement as EsBlockStatement, IfStatement as EsIfStatement }
 import type { Transformer, TransformerContext } from './types';
 
 function bBlockStatement(childNodes: IrChildNode[], cxt: TransformerContext): EsBlockStatement {
-    return b.blockStatement(childNodes.flatMap((childNode) => irToEs(childNode, cxt)));
+    return b.blockStatement(
+        optimizeAdjacentYieldStmts(childNodes.flatMap((childNode) => irToEs(childNode, cxt)))
+    );
 }
 
 export const If: Transformer<IrIf> = function If(node, cxt) {
