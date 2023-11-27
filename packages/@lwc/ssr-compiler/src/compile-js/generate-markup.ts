@@ -26,7 +26,6 @@ const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
         instance.isConnected = true;
         instance.connectedCallback?.();
         yield \`<\${tagName}\`;
-        // TODO: invoke connectedCallback
         yield *__renderAttrs(attrs)
         yield '>';
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
