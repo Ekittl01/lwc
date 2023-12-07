@@ -48,7 +48,6 @@ import {
 import { componentValueObserved } from './mutation-tracker';
 import {
     patchShadowRootWithRestrictions,
-    patchLightningElementPrototypeWithRestrictions,
     patchCustomElementWithRestrictions,
 } from './restrictions';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
@@ -828,7 +827,3 @@ defineProperty(LightningElement, 'CustomElementConstructor', {
     },
     configurable: true,
 });
-
-if (process.env.NODE_ENV !== 'production') {
-    patchLightningElementPrototypeWithRestrictions(LightningElement.prototype);
-}
